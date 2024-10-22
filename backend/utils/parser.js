@@ -1,4 +1,3 @@
-
 // backend/utils/parser.js
 const jsep = require('jsep');
 const ASTNode = require('./ast');
@@ -20,28 +19,6 @@ function parseRule(ruleString) {
   }
 }
 
-// function buildAST(node) {
-//   // Treat 'AND' and 'OR' as operators regardless of jsep's node type
-//   if (
-//     node.type === 'LogicalExpression' ||
-//     (node.type === 'BinaryExpression' && (node.operator === 'AND' || node.operator === 'OR'))
-//   ) {
-//     const operator = node.operator.toUpperCase();
-//     const left = buildAST(node.left);
-//     const right = buildAST(node.right);
-//     return new ASTNode('operator', operator, left, right);
-//   } else if (node.type === 'BinaryExpression') {
-//     const operator = node.operator;
-//     const left = buildAST(node.left);
-//     const right = buildAST(node.right);
-//     return new ASTNode('operand', operator, left, right);
-//   } else if (node.type === 'Identifier' || node.type === 'Literal') {
-//     // Handle simple operands or literals
-//     return new ASTNode('operand', null, null, null, node.value);
-//   } else {
-//     throw new Error(`Unsupported node type: ${node.type}`);
-//   }
-// }
 
 function buildAST(node) {
   if (

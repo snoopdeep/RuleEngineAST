@@ -1,5 +1,6 @@
 // backend/controllers/ruleController.js
 const Rule = require('../models/Rule');
+const mongoose = require('mongoose');
 const { parseRule } = require('../utils/parser');
 
 // Create a new rule
@@ -22,32 +23,59 @@ exports.createRule = async (req, res) => {
   }
 };
 
-// Combine multiple rules
+// THIS IS TAKING combinedRule name as optional parameter if not mention, it will override the combined_rule in database 
 
-// override combine_rule 
 exports.combineRules = async (req, res) => {
   try {
-    const { rule_names, operator } = req.body;
+    console.log("hi from combine rules: ",req.body);
+    const { rule_names, operators, combined_rule_name } = req.body;
 
-    // Check if a rule with the name 'combined_rule' already exists
-    let combinedRule = await Rule.findOne({ name: 'combined_rule' });
+    // Default combined rule name
+    const ruleName = combined_rule_name || 'combined_rule';
 
-    // Combine the rules
-    let combinedAST = null;
-    const rules = await Rule.find({ name: { $in: rule_names } });
+    // Validate that the number of operators is one less than the number of rules
+    if (operators.length !== rule_names.length - 1) {
+      return res.status(400).json({ error: 'Number of operators must be one less than number of rules' });
+    }
 
-    rules.forEach((rule) => {
-      if (!combinedAST) {
-        combinedAST = rule.ast;
-      } else {
-        combinedAST = {
-          type: 'operator',
-          operator: operator || 'OR',
-          left: combinedAST,
-          right: rule.ast,
-        };
+    // Validate operators
+    const validOperators = ['AND', 'OR'];
+    for (const op of operators) {
+      if (!validOperators.includes(op)) {
+        return res.status(400).json({ error: `Invalid operator: ${op}` });
       }
-    });
+    }
+
+    // Check if a rule with the specified name already exists
+    let combinedRule = await Rule.findOne({ name: ruleName });
+
+    // Fetch and validate rules
+    const rules = await Rule.find({ name: { $in: rule_names } });
+    console.log(rules.length, rule_names.length);
+
+      const foundNames = rules.map((rule) => rule.name);
+      console.log(foundNames);
+      const missingNames = rule_names.filter((name) => !foundNames.includes(name));
+      console.log(missingNames,missingNames.length);
+      console.log(typeof missingNames.length)
+      if(missingNames.length!==0){
+        console.log('haoidoazjd');
+       return res.status(400).json({ error: `Rules not found: ${missingNames.join(', ')}` });
+      }
+
+    // Start combining the rules using the provided operators
+    let combinedAST = rules[0].ast; // Initialize with the AST of the first rule
+    console.log(combinedAST);
+
+    for (let i = 1; i < rules.length; i++) {
+      const operator = operators[i - 1];
+      combinedAST = {
+        type: 'operator',
+        operator: operator,
+        left: combinedAST,
+        right: rules[i].ast,
+      };
+    }
 
     if (combinedRule) {
       // Update the existing combined rule
@@ -57,11 +85,11 @@ exports.combineRules = async (req, res) => {
     } else {
       // Save a new combined rule if it doesn't exist
       combinedRule = new Rule({
-        name: 'combined_rule',
+        name: ruleName,
         ast: combinedAST,
       });
       await combinedRule.save();
-      res.status(200).json({ combined_ast: combinedAST, message: 'Combined rule saved' });
+      return res.status(200).json({ combined_ast: combinedAST, message: 'Combined rule saved' });
     }
   } catch (error) {
     res.status(400).json({ error: error.message });
@@ -69,68 +97,8 @@ exports.combineRules = async (req, res) => {
 };
 
 
-// exports.combineRules = async (req, res) => {
-//   try {
-//     const { rule_names, operator } = req.body;  // Use operator to combine, e.g., AND/OR
-
-//     const rules = await Rule.find({ name: { $in: rule_names } });
-
-//     if (rules.length !== rule_names.length) {
-//       return res.status(404).json({ error: 'One or more rules not found' });
-//     }
-
-//     let combinedAST = null;
-//     rules.forEach((rule) => {
-//       if (!combinedAST) {
-//         combinedAST = rule.ast;
-//       } else {
-//         combinedAST = {
-//           type: 'operator',
-//           operator: operator || 'OR',  // Default to OR if not specified
-//           left: combinedAST,
-//           right: rule.ast,
-//         };
-//       }
-//     });
-
-//      // Save the combined rule as a new rule in the database
-//      const combinedRule = new Rule({
-//       name: 'combined_rule', // You can change this name dynamically if needed
-//       ast: combinedAST
-//     });
-    
-//     await combinedRule.save();
-
-//     res.status(200).json({ combined_ast: combinedAST });
-//   } catch (error) {
-//     res.status(400).json({ error: error.message });
-//   }
-// };
 
 
-// Evaluate a rule against data
-// exports.evaluateRule = async (req, res) => {
-//   try {
-//     const { rule_name, data } = req.body;
-
-//     // Fetch the rule
-//     const rule = await Rule.findOne({ name: rule_name });
-//     if (!rule) {
-//       return res.status(404).json({ error: 'Rule not found' });
-//     }
-//     console.log('Evaluating Rule:', rule.name);
-//     console.log('AST:', JSON.stringify(rule.ast, null, 2));
-//     console.log('Data:', JSON.stringify(data, null, 2));
-
-//     // Evaluate the AST
-//     const result = evaluateAST(rule.ast, data);
-//     console.log('Evaluation Result:', result);
-
-//     res.status(200).json({ eligible: result });
-//   } catch (error) {
-//     res.status(400).json({ error: error.message });
-//   }
-// };
 
 exports.evaluateRule = async (req, res) => {
   try {
@@ -241,13 +209,18 @@ function evaluateAST(node, data) {
   return false;
 }
 
-// Modify a rule
+
 exports.modifyRule = async (req, res) => {
   try {
     const { rule_id } = req.params;
     const { name, rule_string } = req.body;
 
-    // Parse the new rule string into AST
+    // Check if the provided rule_id is a valid MongoDB ObjectId
+    if (!mongoose.Types.ObjectId.isValid(rule_id)) {
+      return res.status(400).json({ error: 'Invalid rule_id format' });
+    }
+
+    // Parse the new rule string into AST (assuming parseRule is correctly implemented)
     const ast = parseRule(rule_string);
 
     // Find and update the rule
@@ -266,6 +239,7 @@ exports.modifyRule = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
 
 // Delete a rule
 exports.deleteRule = async (req, res) => {
