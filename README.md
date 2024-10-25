@@ -12,12 +12,6 @@
 - [Running the Application](#running-the-application)
   - [Starting the Backend Server](#starting-the-backend-server)
   - [Starting the Frontend Server](#starting-the-frontend-server)
-- [Build Instructions](#build-instructions)
-- [Design Choices](#design-choices)
-- [Security Measures](#security-measures)
-- [Performance Optimizations](#performance-optimizations)
-- [Contributing](#contributing)
-- [License](#license)
 - [Contact](#contact)
 
 ---
@@ -77,7 +71,7 @@ Make sure you have the following software installed:
 
 3. **Configure Environment Variables**
 
-    Create a `.env` file in the `backend` directory and add your MongoDB connection URL:
+    In `.env` file of the `backend` directory, add your MongoDB connection URL:
 
     ```bash
     MONGODB_URI=your_mongodb_connection_string
@@ -121,4 +115,12 @@ num start
 ```
 This will start the frontend development server on ```http://localhost:3000```.
 
+---
+
+# Contact Information
+
+If you have any questions or would like to reach out, feel free to contact me via the following channels:
+
+- **Email**: [singhdeepak.bengaluru7@gmail.com](mailto:singhdeepak.bengaluru7@gmail.com)
+- **Phone No**: [+91 9170520433](9170520433)
 
