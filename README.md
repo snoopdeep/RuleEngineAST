@@ -65,8 +65,8 @@ Make sure you have the following software installed:
 1. **Clone the Repository**
 
     ```bash
-    git clone https://github.com/yourusername/rule-engine.git
-    cd rule-engine/backend
+    git clone https://github.com/snoopdeep/RuleEngineAST.git
+    cd RuleEngineAST/backend
     ```
 
 2. **Install Dependencies**
