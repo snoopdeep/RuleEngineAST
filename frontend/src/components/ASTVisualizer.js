@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 import ReactFlow, {
   Controls,
   Background,
   useNodesState,
   useEdgesState,
-} from 'reactflow';
-import 'reactflow/dist/style.css';
+} from "reactflow";
+import "reactflow/dist/style.css";
 
 const ASTVisualizer = ({ ast }) => {
   const [nodes, setNodes, onNodesChange] = useNodesState([]);
@@ -21,23 +21,28 @@ const ASTVisualizer = ({ ast }) => {
     const getNodeLabel = (node) => {
       if (node.operator) return node.operator;
       if (node.value !== undefined) return String(node.value);
-      return 'Node';
+      return "Node";
     };
 
-    const calculateNodePositions = (node, level = 0, position = 0, positions = {}) => {
+    const calculateNodePositions = (
+      node,
+      level = 0,
+      position = 0,
+      positions = {}
+    ) => {
       const currentId = nodeId++;
       const xSpacing = 100;
       const ySpacing = 100;
-      
+
       positions[currentId] = {
         x: position * xSpacing,
-        y: level * ySpacing
+        y: level * ySpacing,
       };
 
       let childCount = 0;
       if (node.left) {
         childCount += calculateNodePositions(
-          node.left, 
+          node.left,
           level + 1,
           position - 1,
           positions
@@ -66,8 +71,8 @@ const ASTVisualizer = ({ ast }) => {
         id: id.toString(),
         data: { label },
         position,
-        className: 'bg-white rounded-md border-2 border-gray-300 p-2',
-        style: { width: 80, textAlign: 'center' }
+        className: "bg-white rounded-md border-2 border-gray-300 p-2",
+        style: { width: 80, textAlign: "center" },
       });
 
       if (parentId !== null) {
@@ -75,9 +80,9 @@ const ASTVisualizer = ({ ast }) => {
           id: `e${parentId}-${id}`,
           source: parentId.toString(),
           target: id.toString(),
-          type: 'smoothstep',
+          type: "smoothstep",
           animated: false,
-          style: { stroke: '#999' }
+          style: { stroke: "#999" },
         });
       }
 
@@ -102,7 +107,10 @@ const ASTVisualizer = ({ ast }) => {
   }, [ast]);
 
   return (
-    <div style={{ width: '100%', height: '500px' }} className="border rounded-lg">
+    <div
+      style={{ width: "100%", height: "500px" }}
+      className="border rounded-lg"
+    >
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -119,4 +127,3 @@ const ASTVisualizer = ({ ast }) => {
 };
 
 export default ASTVisualizer;
-

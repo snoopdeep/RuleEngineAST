@@ -1,9 +1,6 @@
-// frontend/src/api/api.js
-import axios from 'axios';
-// dotenv.config();
+import axios from "axios";
 
 const API_URL = process.env.REACT_APP_API_URL;
-console.log(API_URL);
 
 // Create a new rule
 export const createRule = (ruleData) => {
@@ -30,13 +27,12 @@ export const deleteRule = (ruleId) => {
   return axios.delete(`${API_URL}/rules/${ruleId}`);
 };
 
-
 export const fetchAvailableRules = async () => {
   try {
-    const response = await axios.get('http://localhost:5000/api/rules');
-    return response.data; // Return the data containing the rules
+    const response = await axios.get("http://localhost:5000/api/rules");
+    return response.data;
   } catch (error) {
-    console.error('Error fetching available rules:', error);
-    throw new Error('Failed to fetch available rules');
+    console.error("Error fetching available rules:", error);
+    throw new Error("Failed to fetch available rules");
   }
 };

@@ -45,7 +45,7 @@ The application uses a **Client-Server** architecture:
 
 Make sure you have the following software installed:
 
-- **Node.js** (v14.x or later)
+- **Node.js** (v20.x or later)
 - **npm** (v6.x or later)
 - **MongoDB** (v4.x or later)
 - **Git**
@@ -61,7 +61,11 @@ Make sure you have the following software installed:
     ```bash
     git clone https://github.com/snoopdeep/RuleEngineAST.git
     ```
+<<<<<<< HEAD
     ```bash
+=======
+    ```bash 
+>>>>>>> d736891 ( dockerize and readme.md)
     cd RuleEngineAST/backend
     ```
 
@@ -118,6 +122,33 @@ num start
 This will start the frontend development server on ```http://localhost:3000```.
 
 ---
+
+Starting with Docker
+-----
+I assume you have installed Docker and it is running.
+
+See the [Docker website](http://www.docker.io/gettingstarted/#h_installation) for installation instructions.
+
+**Environment Variables:** Ensure .env variables (e.g., MONGODB_URI) are configured correctly in backend/.env.
+
+
+Build
+-----
+Run the following command to build and start the containers:
+```bash
+docker-compose up --build
+```
+
+Once everything has started up, you should be able to access the webapp via [http://localhost:3000/](http://localhost:3000/) on your host machine.
+```bash
+http://localhost:3000/
+```
+
+To stop the services, use:
+
+```bash
+docker-compose down
+```
 
 # Contact Information
 

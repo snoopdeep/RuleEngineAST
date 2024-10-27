@@ -1,4 +1,3 @@
-// backend/server.js
 const express = require('express');
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
@@ -11,7 +10,7 @@ dotenv.config();
 const app = express();
 
 app.use(cors({
-  origin: 'http://localhost:3000', // Frontend URL
+  origin: 'http://localhost:3000', 
 }));
 
 // Middleware
@@ -26,7 +25,6 @@ app.get('/', (req, res) => {
   res.send('Rule Engine API is running');
 });
 
-console.log(process.env.MONGO_URI)
 // Connect to MongoDB and start the server
 mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
@@ -41,6 +39,6 @@ mongoose
 
   // Error-handling middleware
 app.use((err, req, res, next) => {
-  console.error(err.stack); // Log the error for debugging
+  console.error(err.stack);
   res.status(400).json({ error: err.message });
 });

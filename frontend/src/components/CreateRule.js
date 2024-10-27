@@ -1,53 +1,65 @@
-// frontend/src/components/CreateRule.js
 import React, { useState } from "react";
 import { createRule } from "../api/api";
-import "./CreateRule.css"; 
+import "./CreateRule.css";
 
 const CreateRule = () => {
   const [name, setName] = useState("");
   const [ruleString, setRuleString] = useState("");
   const [message, setMessage] = useState("");
-  const [messageType, setMessageType] = useState(""); 
+  const [messageType, setMessageType] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     // Check for invalid symbols
     if (/[^a-zA-Z0-9\s&|=><()'\"!]/g.test(ruleString)) {
-      setMessage("Error: Invalid symbols detected. Only alphanumeric characters, spaces, and symbols like &, |, =, >, <, (), '\" and ! are allowed.");
+      setMessage(
+        "Error: Invalid symbols detected. Only alphanumeric characters, spaces, and symbols like &, |, =, >, <, (), '\" and ! are allowed."
+      );
       setMessageType("error");
       return;
     }
 
     // Check for required operators (>, <, =, >=, etc.)
     if (!/[><=!]/.test(ruleString)) {
-      setMessage("Error: The rule must contain at least one comparison operator (e.g., >, <, =, >=, !=, etc.).");
+      setMessage(
+        "Error: The rule must contain at least one comparison operator (e.g., >, <, =, >=, !=, etc.)."
+      );
       setMessageType("error");
       return;
     }
 
     // Check for lowercase 'and' or 'or' and show error if found
     if (/\band\b|\bor\b/.test(ruleString)) {
-      setMessage("Error: Please use 'AND' or '&&' and 'OR' or '||' instead of 'and' or 'or'.");
+      setMessage(
+        "Error: Please use 'AND' or '&&' and 'OR' or '||' instead of 'and' or 'or'."
+      );
       setMessageType("error");
       return;
     }
-   
+
     // Replace single '=' with '==' only if it's not preceded by '>' or '<' or '!'
     let formattedRuleString = ruleString.replace(/(?<![<>=!])=(?!=)/g, "==");
 
     // Check for single '&' or '|' in the rule string and show error if found
     if (/[^&]&(?!&)|[^|]\|(?!\|)/.test(formattedRuleString)) {
-      setMessage("Error: Please use 'AND' and 'OR' instead of single '&' and '|'.");
+      setMessage(
+        "Error: Please use 'AND' and 'OR' instead of single '&' and '|'."
+      );
       setMessageType("error");
       return;
     }
 
     // Replace '&&' with 'AND' and '||' with 'OR' if they are used
-    formattedRuleString = formattedRuleString.replace(/&&/g, "AND").replace(/\|\|/g, "OR");
+    formattedRuleString = formattedRuleString
+      .replace(/&&/g, "AND")
+      .replace(/\|\|/g, "OR");
 
     try {
-      const response = await createRule({ name, rule_string: formattedRuleString });
+      const response = await createRule({
+        name,
+        rule_string: formattedRuleString,
+      });
       setMessage(`Rule "${response.data.name}" created successfully!`);
       setMessageType("success");
       setName("");
@@ -57,7 +69,6 @@ const CreateRule = () => {
       setMessageType("error");
     }
 
-    // Clear the message after 3 seconds
     setTimeout(() => {
       setMessage("");
       setMessageType("");

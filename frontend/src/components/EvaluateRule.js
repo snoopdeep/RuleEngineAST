@@ -1,24 +1,23 @@
-import React, { useState, useEffect } from 'react';
-import { evaluateRule, fetchAvailableRules } from '../api/api';
-import './EvaluateRule.css'; // Include custom styles
+import React, { useState, useEffect } from "react";
+import { evaluateRule, fetchAvailableRules } from "../api/api";
+import "./EvaluateRule.css";
 
 const EvaluateRule = () => {
-  const [ruleName, setRuleName] = useState('');
+  const [ruleName, setRuleName] = useState("");
   const [availableRules, setAvailableRules] = useState([]);
   const [fields, setFields] = useState({});
   const [data, setData] = useState({});
   const [result, setResult] = useState(null);
-  const [message, setMessage] = useState('');
+  const [message, setMessage] = useState("");
 
   // Fetch available rules when component mounts
   useEffect(() => {
     const fetchRules = async () => {
       try {
         const response = await fetchAvailableRules();
-        console.log(response);  // Logs the rules array
-        setAvailableRules(response || []);  // Correctly set the available rules
+        setAvailableRules(response || []);
       } catch (error) {
-        setMessage('Failed to fetch available rules.');
+        setMessage("Failed to fetch available rules.");
       }
     };
 
@@ -29,7 +28,7 @@ const EvaluateRule = () => {
   const extractFieldsFromAST = (ast) => {
     const fields = [];
     const traverseAST = (node) => {
-      if (node.type === 'operand' && node.left && node.left.value) {
+      if (node.type === "operand" && node.left && node.left.value) {
         fields.push(node.left.value);
       }
       if (node.left) traverseAST(node.left);
@@ -44,15 +43,17 @@ const EvaluateRule = () => {
     const selectedRuleName = e.target.value;
     setRuleName(selectedRuleName);
 
-    const selectedRule = availableRules.find((rule) => rule.name === selectedRuleName);
+    const selectedRule = availableRules.find(
+      (rule) => rule.name === selectedRuleName
+    );
     if (selectedRule) {
       const extractedFields = extractFieldsFromAST(selectedRule.ast);
       const initialData = extractedFields.reduce((acc, field) => {
-        acc[field] = ''; // Initialize empty values for fields
+        acc[field] = "";
         return acc;
       }, {});
-      setFields(initialData); // Set required fields from AST
-      setData(initialData); // Set data with empty values
+      setFields(initialData);
+      setData(initialData);
     }
   };
 
@@ -68,9 +69,11 @@ const EvaluateRule = () => {
     try {
       const response = await evaluateRule({ rule_name: ruleName, data });
       setResult(response.data.eligible);
-      setMessage('');
+      setMessage("");
     } catch (error) {
-      setMessage(`Error: ${error.response ? error.response.data.error : error.message}`);
+      setMessage(
+        `Error: ${error.response ? error.response.data.error : error.message}`
+      );
     }
   };
 
@@ -78,11 +81,17 @@ const EvaluateRule = () => {
     <div className="evaluate-container">
       <h2>Evaluate Rule</h2>
       <form onSubmit={handleEvaluate}>
-        {/* Dropdown for rule selection */}
         <div className="form-group">
           <label>Select Rule:</label>
-          <select value={ruleName} onChange={handleRuleSelection} className="form-control" required>
-            <option value="" disabled>Select a rule</option>
+          <select
+            value={ruleName}
+            onChange={handleRuleSelection}
+            className="form-control"
+            required
+          >
+            <option value="" disabled>
+              Select a rule
+            </option>
             {availableRules.map((rule) => (
               <option key={rule._id} value={rule.name}>
                 {rule.name}
@@ -91,7 +100,6 @@ const EvaluateRule = () => {
           </select>
         </div>
 
-        {/* Dynamic form fields based on selected rule */}
         {Object.keys(fields).length > 0 && (
           <div className="form-fields">
             {Object.keys(fields).map((field) => (
@@ -110,14 +118,21 @@ const EvaluateRule = () => {
           </div>
         )}
 
-        <button type="submit" id='evaluatebtn' className="btn btn-primary">Evaluate</button>
+        <button type="submit" id="evaluatebtn" className="btn btn-primary">
+          Evaluate
+        </button>
       </form>
 
-      {/* Display result */}
       {message && <p className="error-message">{message}</p>}
       {result !== null && (
-        <div className={`result-box ${result ? 'result-eligible' : 'result-not-eligible'}`}>
-          <p>Eligibility: <strong>{result ? 'Eligible' : 'Not Eligible'}</strong></p>
+        <div
+          className={`result-box ${
+            result ? "result-eligible" : "result-not-eligible"
+          }`}
+        >
+          <p>
+            Eligibility: <strong>{result ? "Eligible" : "Not Eligible"}</strong>
+          </p>
         </div>
       )}
     </div>

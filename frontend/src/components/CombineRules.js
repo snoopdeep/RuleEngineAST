@@ -1,38 +1,36 @@
-
-import React, { useState, useEffect } from 'react';
-import { combineRules } from '../api/api'; // API call for combining rules
-import ASTVisualizer from './ASTVisualizer';
-import './CombineRules.css'; // Include Bootstrap and custom CSS
-import axios from 'axios';
+import React, { useState, useEffect } from "react";
+import { combineRules } from "../api/api";
+import ASTVisualizer from "./ASTVisualizer";
+import "./CombineRules.css";
+import axios from "axios";
 
 // Function to fetch available rules from the API
 const fetchAvailableRules = async () => {
   try {
     const response = await axios.get(`${process.env.REACT_APP_API_URL}/rules`);
-    return response.data || []; // Ensure it returns an array
+    return response.data || [];
   } catch (error) {
-    throw new Error('Failed to fetch available rules');
+    throw new Error("Failed to fetch available rules");
   }
 };
 
 const CombineRules = () => {
-  const [ruleInput, setRuleInput] = useState('');  // To capture the user's input
-  const [combinedRuleName, setCombinedRuleName] = useState('');  // Optional name
-  const [combinedAST, setCombinedAST] = useState(null);  // For visualizing combined AST
-  const [message, setMessage] = useState('');  // For success/failure message
-  const [availableRules, setAvailableRules] = useState([]);  // To store available rules
+  const [ruleInput, setRuleInput] = useState("");
+  const [combinedRuleName, setCombinedRuleName] = useState("");
+  const [combinedAST, setCombinedAST] = useState(null);
+  const [message, setMessage] = useState("");
+  const [availableRules, setAvailableRules] = useState([]);
 
-  // Fetch available rules when component mounts
   useEffect(() => {
     const fetchRules = async () => {
       try {
         const rules = await fetchAvailableRules();
-        setAvailableRules(rules);  // Set the available rules from the response
+        setAvailableRules(rules);
       } catch (error) {
-        setMessage('Failed to fetch available rules.');
+        setMessage("Failed to fetch available rules.");
       }
     };
-    
+
     fetchRules();
   }, []);
 
@@ -41,12 +39,12 @@ const CombineRules = () => {
     const operators = [];
 
     // Simple parsing logic to split by AND/OR and capture rules and operators
-    const tokens = ruleString.split(/\s+/);  // Split by spaces
+    const tokens = ruleString.split(/\s+/);
     tokens.forEach((token) => {
-      if (token.toUpperCase() === 'AND' || token.toUpperCase() === 'OR') {
+      if (token.toUpperCase() === "AND" || token.toUpperCase() === "OR") {
         operators.push(token.toUpperCase());
       } else {
-        ruleNames.push(token.replace(/[()]/g, ''));  // Remove parentheses and push
+        ruleNames.push(token.replace(/[()]/g, ""));
       }
     });
 
@@ -61,13 +59,15 @@ const CombineRules = () => {
       const response = await combineRules({
         rule_names: ruleNames,
         operators,
-        combined_rule_name: combinedRuleName || 'combine_rule',  // Default if empty
+        combined_rule_name: combinedRuleName || "combine_rule", // Default if empty
       });
 
-      setCombinedAST(response.data.combined_ast);  // Update AST visualizer
-      setMessage('Rules combined successfully!');
+      setCombinedAST(response.data.combined_ast); // Update AST visualizer
+      setMessage("Rules combined successfully!");
     } catch (error) {
-      setMessage(`Error: ${error.response?.data?.error || 'Failed to combine rules'}`);
+      setMessage(
+        `Error: ${error.response?.data?.error || "Failed to combine rules"}`
+      );
     }
   };
 
@@ -79,7 +79,9 @@ const CombineRules = () => {
         {/* Dropdown for available rules in the top-right corner */}
         <div className="dropdown-container">
           <select className="form-control" id="availableRulesDropdown">
-            <option disabled selected>Available Rules</option>
+            <option disabled selected>
+              Available Rules
+            </option>
             {availableRules.length > 0 ? (
               availableRules.map((rule) => (
                 <option key={rule._id} value={rule.name}>
@@ -93,7 +95,15 @@ const CombineRules = () => {
         </div>
       </div>
 
-      {message && <div className={`alert ${message.includes('Error') ? 'alert-danger' : 'alert-success'}`}>{message}</div>}
+      {message && (
+        <div
+          className={`alert ${
+            message.includes("Error") ? "alert-danger" : "alert-success"
+          }`}
+        >
+          {message}
+        </div>
+      )}
 
       <div className="form-group">
         <label htmlFor="ruleInput">Enter Combined Rule:</label>

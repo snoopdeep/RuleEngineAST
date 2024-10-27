@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { deleteRule } from '../api/api';
-import ASTVisualizer from './ASTVisualizer';
-import './RuleList.css';  // Import CSS file for styling
+import React, { useEffect, useState } from "react";
+import { deleteRule } from "../api/api";
+import ASTVisualizer from "./ASTVisualizer";
+import "./RuleList.css";
 
 const RuleList = () => {
   const [rules, setRules] = useState([]);
   const [selectedRule, setSelectedRule] = useState(null);
-  const [showAstModal, setShowAstModal] = useState(false); // State for AST modal
-  const [ruleString, setRuleString] = useState(''); // State to store rule string
-  const [message, setMessage] = useState('');
+  const [showAstModal, setShowAstModal] = useState(false);
+  const [ruleString, setRuleString] = useState("");
+  const [message, setMessage] = useState("");
 
   useEffect(() => {
     fetchRules();
@@ -20,23 +20,25 @@ const RuleList = () => {
       const data = await response.json();
       setRules(data);
     } catch (error) {
-      setMessage('Failed to fetch rules');
+      setMessage("Failed to fetch rules");
     }
   };
 
   const handleDelete = async (ruleId) => {
-    const confirmDelete = window.confirm('Are you sure you want to delete this rule?');
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this rule?"
+    );
     if (!confirmDelete) return;
 
     try {
       await deleteRule(ruleId);
-      setMessage('Rule deleted successfully');
+      setMessage("Rule deleted successfully");
       fetchRules();
       if (selectedRule && selectedRule._id === ruleId) {
         setSelectedRule(null);
       }
     } catch (error) {
-      setMessage('Error deleting rule');
+      setMessage("Error deleting rule");
     }
   };
 
@@ -46,26 +48,25 @@ const RuleList = () => {
       const right = convertAstToReadableString(ast.right);
       return `(${left} ${ast.operator} ${right})`;
     }
-    // Return the value when it's a leaf node
-    return ast.value || '';
+    return ast.value || "";
   };
 
   const handleSelect = (rule) => {
     setSelectedRule(rule);
-    setShowAstModal(true); // Show modal when AST is clicked
+    setShowAstModal(true);
     if (rule.ast) {
       setRuleString(convertAstToReadableString(rule.ast));
     }
   };
 
   const closeAstModal = () => {
-    setShowAstModal(false); // Close modal
+    setShowAstModal(false);
   };
 
   return (
     <div className="rule-list-container">
       <h2>Existing Rules</h2>
-      {rules.length==0&& <h3>No Rules Found!</h3>}
+      {rules.length == 0 && <h3>No Rules Found!</h3>}
       {message && <p>{message}</p>}
       <ul className="rule-list">
         {rules.map((rule) => (
@@ -74,7 +75,10 @@ const RuleList = () => {
             <button className="ast-button" onClick={() => handleSelect(rule)}>
               Show AST
             </button>
-            <button className="delete-button" onClick={() => handleDelete(rule._id)}>
+            <button
+              className="delete-button"
+              onClick={() => handleDelete(rule._id)}
+            >
               Delete
             </button>
           </li>
@@ -88,7 +92,10 @@ const RuleList = () => {
             <span className="close-button" onClick={closeAstModal}>
               &times;
             </span>
-            <h4>{selectedRule.name} AST : <span className='ruleString'>Rule String: {ruleString}</span> </h4>
+            <h4>
+              {selectedRule.name} AST :{" "}
+              <span className="ruleString">Rule String: {ruleString}</span>{" "}
+            </h4>
             {/* Display the human-readable rule string */}
             {/* <p className="readable-rule-string">
               Rule String: {ruleString}
