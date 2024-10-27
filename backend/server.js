@@ -38,3 +38,9 @@ mongoose
   .catch((err) => {
     console.error('MongoDB connection error:', err);
   });
+
+  // Error-handling middleware
+app.use((err, req, res, next) => {
+  console.error(err.stack); // Log the error for debugging
+  res.status(400).json({ error: err.message });
+});

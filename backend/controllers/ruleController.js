@@ -11,7 +11,7 @@ exports.createRule = async (req, res) => {
 
     // Parse the rule string into AST
     const ast = parseRule(rule_string);
-    console.log("AST:", JSON.stringify(ast, null, 2));
+    // console.log("AST:", JSON.stringify(ast, null, 2));
 
     // Create and save the rule
     const newRule = new Rule({ name, ast });
