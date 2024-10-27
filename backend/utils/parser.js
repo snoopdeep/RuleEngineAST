@@ -24,16 +24,18 @@ function buildAST(node) {
     const left = buildAST(node.left);
     const right = buildAST(node.right);
     return new ASTNode("operator", operator, left, right);
-  } else if (node.type === "BinaryExpression") {
+  } 
+  else
+   if (node.type === "BinaryExpression") {
     if (node.left.type !== "Identifier") {
-      throw new Error(
-        "Invalid rule format: Left side of a condition must be a variable."
-      );
+      // throw new Error(
+      //   "Invalid rule format: Left side of a condition must be a variable."
+      // );
     }
     if (node.right.type !== "Literal") {
-      throw new Error(
-        "Invalid rule format: Right side of a condition must be a value."
-      );
+      // throw new Error(
+      //   "Invalid rule format: Right side of a condition must be a value."
+      // );
     }
 
     const operator = node.operator;
