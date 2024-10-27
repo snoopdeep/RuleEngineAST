@@ -61,11 +61,7 @@ Make sure you have the following software installed:
     ```bash
     git clone https://github.com/snoopdeep/RuleEngineAST.git
     ```
-<<<<<<< HEAD
     ```bash
-=======
-    ```bash 
->>>>>>> d736891 ( dockerize and readme.md)
     cd RuleEngineAST/backend
     ```
 
